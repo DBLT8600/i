@@ -42,7 +42,7 @@ parted -s "$1" -- mklabel gpt mkpart ESP fat32 1MiB 261MiB set 1 esp on mkpart r
     && arch-chroot /mnt bootctl install \
     && install -m0644 "$loader_conf" /mnt/boot/loader/loader.conf \
     && install -m0644 "$arch_conf" /mnt/boot/loader/entries/arch.conf \
-    && install -m0644 "$wired_network" /mnt/etc/systemd/network/20-wired.network \
+    && install -m0644 "$wired_network" /mnt/etc/systemd/network/en.network \
     && arch-chroot /mnt passwd -l root \
     && arch-chroot /mnt useradd -m arch \
     && arch-chroot /mnt usermod -a -G wheel arch \
