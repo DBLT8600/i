@@ -28,7 +28,7 @@ EOF
 
 trap 'umount -R /mnt' ERR
 
-parted -s "$1" -- mklabel gpt mkpart ESP fat32 1MiB 261MiB set 1 esp on mkpart root ext4 261MiB 100% \
+parted -s "$1" -- mklabel gpt mkpart ESP fat32 1MiB 401MiB set 1 esp on mkpart root ext4 401MiB 100% \
     && mkfs.fat -F32 "${1}1" \
     && mkfs.ext4 "${1}2" \
     && e2label "${1}2" arch_os \
