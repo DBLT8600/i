@@ -16,9 +16,9 @@ initrd /initramfs-linux.img
 options root="LABEL=arch_os" rw
 EOF
 
-wired_network=$(mktemp)
+network_conf=$(mktemp)
 
-cat <<EOF > "$wired_network"
+cat <<EOF > "$network_conf"
 [Match]
 Name=en*
 
@@ -26,7 +26,7 @@ Name=en*
 DHCP=yes
 EOF
 
-trap 'umount -R /mnt' ERR
+trap 'trap - ERR; rm -f "$loader_conf" "$arch_conf" "$network_conf"; umount -R /mnt' ERR INT
 
 parted -s "$1" -- mklabel gpt mkpart ESP fat32 1MiB 401MiB set 1 esp on mkpart root ext4 401MiB 100% \
     && mkfs.fat -F32 "${1}1" \
@@ -42,7 +42,7 @@ parted -s "$1" -- mklabel gpt mkpart ESP fat32 1MiB 401MiB set 1 esp on mkpart r
     && arch-chroot /mnt bootctl install \
     && install -m0644 "$loader_conf" /mnt/boot/loader/loader.conf \
     && install -m0644 "$arch_conf" /mnt/boot/loader/entries/arch.conf \
-    && install -m0644 "$wired_network" /mnt/etc/systemd/network/en.network \
+    && install -m0644 "$network_conf" /mnt/etc/systemd/network/en.network \
     && arch-chroot /mnt passwd -l root \
     && arch-chroot /mnt useradd -m arch \
     && arch-chroot /mnt usermod -a -G wheel arch \
