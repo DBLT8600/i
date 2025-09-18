@@ -36,7 +36,7 @@ parted -s "$1" -- mklabel gpt mkpart ESP fat32 1MiB 401MiB set 1 esp on mkpart r
     && mkdir /mnt/boot \
     && mount "${1}1" /mnt/boot \
     && sed 's/^#\(Parallel.*\)$/\1/' -i /etc/pacman.conf \
-    && pacstrap /mnt base linux linux-firmware rng-tools openssh sudo avahi nss-mdns \
+    && pacstrap /mnt base linux linux-firmware rng-tools openssh sudo vi \
     && genfstab -U /mnt >> /mnt/etc/fstab \
     && arch-chroot /mnt mkinitcpio -P \
     && arch-chroot /mnt bootctl install \
@@ -48,8 +48,7 @@ parted -s "$1" -- mklabel gpt mkpart ESP fat32 1MiB 401MiB set 1 esp on mkpart r
     && arch-chroot /mnt usermod -a -G wheel arch \
     && arch-chroot /mnt passwd arch < <(printf '%s\n' arch arch) \
     && sed 's/^# \(%wheel ALL=(ALL:ALL) ALL\)$/\1/' -i /mnt/etc/sudoers \
-    && sed 's/^\(hosts: [^ ]*\) \(.*\)$/\1 mdns_minimal [NOTFOUND=return] \2/' -i /mnt/etc/nsswitch.conf \
-    && arch-chroot /mnt systemctl enable systemd-{networkd,resolved}.service rngd.service sshd.service avahi-daemon.service \
+    && arch-chroot /mnt systemctl enable systemd-{networkd,resolved}.service rngd.service sshd.service \
     && ln -fs /run/systemd/resolve/stub-resolv.conf /mnt/etc/resolv.conf \
     && umount -R /mnt \
     && reboot
