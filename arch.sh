@@ -1,5 +1,11 @@
 #!/bin/bash
 
+set -eo pipefail
+
+if (( DEBUG )); then
+    set -x
+fi
+
 loader_conf=$(mktemp)
 
 cat <<EOF > "$loader_conf"
