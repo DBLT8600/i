@@ -32,7 +32,7 @@ Name=en*
 DHCP=yes
 EOF
 
-trap 'trap - ERR; rm -f "$loader_conf" "$arch_conf" "$network_conf"; umount -R /mnt' ERR INT
+trap 'trap - ERR; rm -f "$loader_conf" "$arch_conf" "$network_conf"; [[ -e "$swap_dev" ]] && swapoff "$swap_dev"; umount -R /mnt' ERR INT
 
 # $0 /dev/sda boot_size swap_size
 
