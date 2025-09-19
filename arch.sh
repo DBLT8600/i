@@ -105,7 +105,7 @@ mount "$boot_dev" /mnt/boot
 sed '/# Misc options/a ILoveCandy' -i /etc/pacman.conf
 sed 's/^#\(Color\)$/\1/; s/^#\(Parallel.*\)$/\1/' -i /etc/pacman.conf
 
-pacstrap /mnt base linux linux-firmware rng-tools openssh sudo vi
+pacstrap /mnt base linux linux-firmware rng-tools openssh sudo vim
 
 genfstab -U /mnt >> /mnt/etc/fstab
 
