@@ -44,28 +44,22 @@ cat <<EOF > "$sudoers"
 arch ALL=(ALL:ALL) NOPASSWD: ALL
 EOF
 
-trap 'trap - ERR EXIT; set +eo pipefail; rm -f "${config[@]}"; swapoff "${1}2"; umount -R /mnt' ERR EXIT INT
+trap 'trap - ERR EXIT; set +eo pipefail; rm -f "${config[@]}"; umount -R /mnt' ERR EXIT INT
 
 boot_dev="${1}1"
-swap_dev="${1}2"
-root_dev="${1}3"
+root_dev="${1}2"
 
 boot_size=1024
 boot_start=1
 boot_end=$(( boot_start + boot_size ))
 
-swap_size=$(( 4 * 1024 ))
-swap_start=$boot_end
-swap_end=$(( swap_start + swap_size ))
-
-root_start=$swap_end
+root_start=$boot_end
 root_end=100%
 
 parted_args=(
     mklabel gpt
     mkpart esp fat32 ${boot_start}MiB ${boot_end}MiB
     set 1 esp on
-    mkpart swap linux-swap ${swap_start}MiB ${swap_end}MiB
     mkpart root ext4 ${root_start}MiB $root_end
 )
 
@@ -78,8 +72,6 @@ parted -s "$1" -- "${parted_args[@]}" \
     && mkfs.fat -F32 "$boot_dev" \
     && mkdir /mnt/boot \
     && mount "$boot_dev" /mnt/boot \
-    && mkswap "$swap_dev" \
-    && swapon "$swap_dev" \
     && sed 's/^#\(Parallel.*\)$/\1/' -i /etc/pacman.conf \
     && pacstrap /mnt base linux linux-firmware openssh sudo vi vim \
     && genfstab -U /mnt >> /mnt/etc/fstab \
